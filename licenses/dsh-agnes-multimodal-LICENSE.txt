@@ -1,0 +1,34 @@
+MIT License
+
+Copyright (c) 2026 dsh-agnes-multimodal contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+关于这份副本的说明（不是许可证正文，不要当法律条款读）：
+
+上游包 `dsh-agnes-multimodal@1.1.0` 在 `package.json` 里声明 `"license": "MIT"`，
+但它**没有随包发布 LICENSE 文件**，也没有声明仓库地址或版权人。
+
+上面这份 MIT 正文是按它声明的许可类型补的，版权人写成
+"dsh-agnes-multimodal contributors" —— 这是**推定**，不是上游原文。
+
+如果你是这个包的作者，或者知道它的仓库地址：开个 issue 或 PR 告诉我们准确的
+版权人与仓库链接，我们立刻改成原文。

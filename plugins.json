@@ -1,0 +1,132 @@
+{
+  "kit": "dsh-yu-kit",
+  "kitVersion": "1.0.0",
+  "description": "把「蓝色大肥鱼」这套 DSH 插件套件一次性装进一个 profile：人格、记忆、三个内容源、两个出口、微信通道、多模态生成。",
+  "requires": {
+    "dsh": ">=0.2.1-rc.3",
+    "node": ">=22",
+    "os": ["win32", "darwin", "linux"],
+    "note": "作者的机器是 Windows + DSH 桌面版 0.2.1-rc.3；其他平台未实测。"
+  },
+  "profileDefaults": {
+    "profile": "desktop",
+    "workspace": "%USERPROFILE%\\dsh-workspace"
+  },
+  "plugins": [
+    {
+      "name": "dsh-persona-distill",
+      "version": "2.1.0",
+      "source": "github:Speraymer/dsh-persona-distill#d540f91a41399271f69cba2e4c1c2ee76dc72c5e",
+      "layer": "persona",
+      "self": true,
+      "does": "每周把刷到的原料蒸馏进 ~/.dsh/AGENTS.md 的 AUTO 段；每天做一次反面对照",
+      "needs": ["至少一个内容源插件在跑，否则没有原料可蒸"],
+      "manual": ["首次要填蒸馏时段与跑的天数（设置页「人格蒸馏」）"]
+    },
+    {
+      "name": "dsh-yu-memory",
+      "version": "3.0.0",
+      "source": "github:Speraymer/dsh-yu-memory#adf1054b30d75d61e94a5181564065aa9531a931",
+      "layer": "memory",
+      "self": true,
+      "does": "两层被动记忆：长期记忆 store.json + 会淡忘的对话记忆 chat.json；工具 remember_global / forget_global",
+      "needs": [],
+      "manual": []
+    },
+    {
+      "name": "dsh-yu-mood",
+      "version": "2.0.1",
+      "source": "github:Speraymer/dsh-yu-mood#863317b42e1dbb72bef4ea9b63cd73ba72470c7f",
+      "layer": "persona",
+      "self": true,
+      "does": "每轮聊完自动判断情绪涨跌，右下角挂件点开看数值/情绪/时间线",
+      "needs": [],
+      "manual": ["想让它判断得准，要在设置里挑一个可用的模型（默认跟随当前会话）"]
+    },
+    {
+      "name": "dsh-yu-bili",
+      "version": "2.1.0",
+      "source": "github:Speraymer/dsh-yu-bili#8c2a13d20915925dbfd94e194790eae1242e7810",
+      "layer": "source",
+      "self": true,
+      "does": "定时刷 B站：挑视频、读字幕、写日报、发评论（可 @ 你）",
+      "needs": ["Python venv（转写用）", "B站登录凭证", "模型额度"],
+      "manual": [
+        "扫码登录 B站（设置页「刷B站」→ 登录）",
+        "填 pythonPath（venv 里的 python）与 workspace",
+        "填 dmUid / trustedCommandUid / mentionName（你自己的 UID 与昵称）"
+      ]
+    },
+    {
+      "name": "dsh-yu-zhihu",
+      "version": "2.1.0",
+      "source": "github:Speraymer/dsh-yu-zhihu#bec672a21f95231c5596fb32aced57130f0c4080",
+      "layer": "source",
+      "self": true,
+      "does": "定时刷知乎：读推荐流与评论，按人格限量点赞/评论/收藏，可发想法",
+      "needs": ["zhihu CLI 与登录态", "模型额度"],
+      "manual": ["安装 zhihu CLI 并登录（设置页会显示 cliPath 与状态）", "填 cliPath"]
+    },
+    {
+      "name": "dsh-yu-weibo",
+      "version": "2.1.0",
+      "source": "github:Speraymer/dsh-yu-weibo#af53bf1b009a3ebcc706057a5ebb5930ff311d2d",
+      "layer": "source",
+      "self": true,
+      "does": "定时只读微博：走 m.weibo.cn 公开接口，访客身份，不登录不写",
+      "needs": [],
+      "manual": ["写操作（点赞/评论/发博）需要微博开放平台服务，默认关闭"]
+    },
+    {
+      "name": "dsh-yu-qq",
+      "version": "2.0.1",
+      "source": "github:Speraymer/dsh-yu-qq#6c6a59eacc3e2263337e9d987821ef60eb8f5c30",
+      "layer": "exit",
+      "self": true,
+      "does": "QQ 双向桥：群聊/私聊分会话、点名响应、离线补课、引用与表情",
+      "needs": ["一个能跑 OneBot 的 QQ 客户端（如 NapCat）", "群号 / 你自己的 QQ 号"],
+      "manual": [
+        "先把 QQ 客户端（NapCat 之类）跑起来，拿到 HTTP/WS 地址与 token",
+        "填群号、私聊对象、你自己的 UID",
+        "填群会话表（多群时每个群要有一行映射）"
+      ]
+    },
+    {
+      "name": "dsh-yu-speak",
+      "version": "2.0.1",
+      "source": "github:Speraymer/dsh-yu-speak#de65fa217d9db118f709b6aca04cc0e9980c02af",
+      "layer": "exit",
+      "self": true,
+      "does": "按本地概率与冷却规则决定要不要自己发起一轮对话（主动开口）",
+      "needs": ["模型额度"],
+      "manual": ["决定开多大频率：默认很克制，调高会明显烧 token"]
+    },
+    {
+      "name": "dsh-wechat-plugin",
+      "version": "0.44.0",
+      "source": "dsh-wechat-plugin@0.44.0",
+      "layer": "exit",
+      "self": false,
+      "license": "MIT",
+      "upstream": "https://github.com/xcisxc29/dsh-wechat",
+      "does": "微信通道：扫码登录后可以把会话接到微信，也能主动推消息",
+      "needs": ["微信扫码登录（iLink）"],
+      "manual": ["扫码登录微信；登录态会过期，需要重扫"]
+    },
+    {
+      "name": "dsh-agnes-multimodal",
+      "version": "1.1.0",
+      "source": "dsh-agnes-multimodal@1.1.0",
+      "layer": "capability",
+      "self": false,
+      "license": "MIT",
+      "upstream": null,
+      "does": "图片/视频生成工具：generate_image、generate_video，走 Agnes AI 平台",
+      "needs": ["Agnes AI 的 API key"],
+      "manual": ["到 platform.agnes-ai.cn 注册并建 key，填进「设置 → 多模态配置」"]
+    }
+  ],
+  "notIncluded": [
+    { "name": "皮肤 / 挂件 / 开机动画 / TTS", "why": "和人格构建无关，各装各的；作者的机器上另外装了 @smalltailqwq/dsh-client-ui-skin-*、dsh-whale-widget、dsh-boot-animation、@memef1f1y/dsh-plugin-tts。" }
+  ]
+}
