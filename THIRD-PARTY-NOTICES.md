@@ -16,7 +16,7 @@
 | `dsh-persona-distill` | 2.1.0 | `d540f91a41399271f69cba2e4c1c2ee76dc72c5e` | https://github.com/Speraymer/dsh-persona-distill |
 | `dsh-yu-memory` | 3.0.0 | `adf1054b30d75d61e94a5181564065aa9531a931` | https://github.com/Speraymer/dsh-yu-memory |
 | `dsh-yu-mood` | 2.0.1 | `863317b42e1dbb72bef4ea9b63cd73ba72470c7f` | https://github.com/Speraymer/dsh-yu-mood |
-| `dsh-yu-bili` | 2.1.0 | `8c2a13d20915925dbfd94e194790eae1242e7810` | https://github.com/Speraymer/dsh-yu-bili |
+| `dsh-yu-bili` | 2.1.0 | `0fe849c1472587e9c444b3c55c7c8cc71ee1081f` | https://github.com/Speraymer/dsh-yu-bili |
 | `dsh-yu-zhihu` | 2.1.0 | `bec672a21f95231c5596fb32aced57130f0c4080` | https://github.com/Speraymer/dsh-yu-zhihu |
 | `dsh-yu-weibo` | 2.1.0 | `af53bf1b009a3ebcc706057a5ebb5930ff311d2d` | https://github.com/Speraymer/dsh-yu-weibo |
 | `dsh-yu-qq` | 2.0.1 | `6c6a59eacc3e2263337e9d987821ef60eb8f5c30` | https://github.com/Speraymer/dsh-yu-qq |

@@ -46,7 +46,7 @@
     {
       "name": "dsh-yu-bili",
       "version": "2.1.0",
-      "source": "github:Speraymer/dsh-yu-bili#8c2a13d20915925dbfd94e194790eae1242e7810",
+      "source": "github:Speraymer/dsh-yu-bili#0fe849c1472587e9c444b3c55c7c8cc71ee1081f",
       "layer": "source",
       "self": true,
       "does": "定时刷 B站：挑视频、读字幕、写日报、发评论（可 @ 你）",
