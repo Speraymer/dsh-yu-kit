@@ -19,7 +19,7 @@
 | `dsh-yu-bili` | 2.1.0 | `0fe849c1472587e9c444b3c55c7c8cc71ee1081f` | https://github.com/Speraymer/dsh-yu-bili |
 | `dsh-yu-zhihu` | 2.1.0 | `bec672a21f95231c5596fb32aced57130f0c4080` | https://github.com/Speraymer/dsh-yu-zhihu |
 | `dsh-yu-weibo` | 2.1.0 | `af53bf1b009a3ebcc706057a5ebb5930ff311d2d` | https://github.com/Speraymer/dsh-yu-weibo |
-| `dsh-yu-qq` | 2.0.1 | `6c6a59eacc3e2263337e9d987821ef60eb8f5c30` | https://github.com/Speraymer/dsh-yu-qq |
+| `dsh-yu-qq` | 2.0.1 | `fadd3f7adb2a3800879b55746e314cf582add0cd` | https://github.com/Speraymer/dsh-yu-qq |
 | `dsh-yu-speak` | 2.0.1 | `de65fa217d9db118f709b6aca04cc0e9980c02af` | https://github.com/Speraymer/dsh-yu-speak |
 
 每个仓库里都有各自的 `LICENSE`（MIT）。其中两个仓库还带 `NOTICE.md`，里面记着它们内部

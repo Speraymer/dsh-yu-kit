@@ -5,7 +5,11 @@
   "requires": {
     "dsh": ">=0.2.1-rc.3",
     "node": ">=22",
-    "os": ["win32", "darwin", "linux"],
+    "os": [
+      "win32",
+      "darwin",
+      "linux"
+    ],
     "note": "作者的机器是 Windows + DSH 桌面版 0.2.1-rc.3；其他平台未实测。"
   },
   "profileDefaults": {
@@ -20,8 +24,12 @@
       "layer": "persona",
       "self": true,
       "does": "每周把刷到的原料蒸馏进 ~/.dsh/AGENTS.md 的 AUTO 段；每天做一次反面对照",
-      "needs": ["至少一个内容源插件在跑，否则没有原料可蒸"],
-      "manual": ["首次要填蒸馏时段与跑的天数（设置页「人格蒸馏」）"]
+      "needs": [
+        "至少一个内容源插件在跑，否则没有原料可蒸"
+      ],
+      "manual": [
+        "首次要填蒸馏时段与跑的天数（设置页「人格蒸馏」）"
+      ]
     },
     {
       "name": "dsh-yu-memory",
@@ -41,16 +49,22 @@
       "self": true,
       "does": "每轮聊完自动判断情绪涨跌，右下角挂件点开看数值/情绪/时间线",
       "needs": [],
-      "manual": ["想让它判断得准，要在设置里挑一个可用的模型（默认跟随当前会话）"]
+      "manual": [
+        "想让它判断得准，要在设置里挑一个可用的模型（默认跟随当前会话）"
+      ]
     },
     {
       "name": "dsh-yu-bili",
-      "version": "2.1.0",
-      "source": "github:Speraymer/dsh-yu-bili#0fe849c1472587e9c444b3c55c7c8cc71ee1081f",
+      "version": "2.1.1",
+      "source": "github:Speraymer/dsh-yu-bili#1bbbde938220b9be976e5572301621314a0beb32",
       "layer": "source",
       "self": true,
       "does": "定时刷 B站：挑视频、读字幕、写日报、发评论（可 @ 你）",
-      "needs": ["Python venv（转写用）", "B站登录凭证", "模型额度"],
+      "needs": [
+        "Python venv（转写用）",
+        "B站登录凭证",
+        "模型额度"
+      ],
       "manual": [
         "扫码登录 B站（设置页「刷B站」→ 登录）",
         "填 pythonPath（venv 里的 python）与 workspace",
@@ -64,8 +78,14 @@
       "layer": "source",
       "self": true,
       "does": "定时刷知乎：读推荐流与评论，按人格限量点赞/评论/收藏，可发想法",
-      "needs": ["zhihu CLI 与登录态", "模型额度"],
-      "manual": ["安装 zhihu CLI 并登录（设置页会显示 cliPath 与状态）", "填 cliPath"]
+      "needs": [
+        "zhihu CLI 与登录态",
+        "模型额度"
+      ],
+      "manual": [
+        "安装 zhihu CLI 并登录（设置页会显示 cliPath 与状态）",
+        "填 cliPath"
+      ]
     },
     {
       "name": "dsh-yu-weibo",
@@ -75,16 +95,21 @@
       "self": true,
       "does": "定时只读微博：走 m.weibo.cn 公开接口，访客身份，不登录不写",
       "needs": [],
-      "manual": ["写操作（点赞/评论/发博）需要微博开放平台服务，默认关闭"]
+      "manual": [
+        "写操作（点赞/评论/发博）需要微博开放平台服务，默认关闭"
+      ]
     },
     {
       "name": "dsh-yu-qq",
-      "version": "2.0.1",
-      "source": "github:Speraymer/dsh-yu-qq#6c6a59eacc3e2263337e9d987821ef60eb8f5c30",
+      "version": "2.0.2",
+      "source": "github:Speraymer/dsh-yu-qq#fadd3f7adb2a3800879b55746e314cf582add0cd",
       "layer": "exit",
       "self": true,
       "does": "QQ 双向桥：群聊/私聊分会话、点名响应、离线补课、引用与表情",
-      "needs": ["一个能跑 OneBot 的 QQ 客户端（如 NapCat）", "群号 / 你自己的 QQ 号"],
+      "needs": [
+        "一个能跑 OneBot 的 QQ 客户端（如 NapCat）",
+        "群号 / 你自己的 QQ 号"
+      ],
       "manual": [
         "先把 QQ 客户端（NapCat 之类）跑起来，拿到 HTTP/WS 地址与 token",
         "填群号、私聊对象、你自己的 UID",
@@ -98,8 +123,12 @@
       "layer": "exit",
       "self": true,
       "does": "按本地概率与冷却规则决定要不要自己发起一轮对话（主动开口）",
-      "needs": ["模型额度"],
-      "manual": ["决定开多大频率：默认很克制，调高会明显烧 token"]
+      "needs": [
+        "模型额度"
+      ],
+      "manual": [
+        "决定开多大频率：默认很克制，调高会明显烧 token"
+      ]
     },
     {
       "name": "dsh-wechat-plugin",
@@ -110,8 +139,12 @@
       "license": "MIT",
       "upstream": "https://github.com/xcisxc29/dsh-wechat",
       "does": "微信通道：扫码登录后可以把会话接到微信，也能主动推消息",
-      "needs": ["微信扫码登录（iLink）"],
-      "manual": ["扫码登录微信；登录态会过期，需要重扫"]
+      "needs": [
+        "微信扫码登录（iLink）"
+      ],
+      "manual": [
+        "扫码登录微信；登录态会过期，需要重扫"
+      ]
     },
     {
       "name": "dsh-agnes-multimodal",
@@ -122,11 +155,18 @@
       "license": "MIT",
       "upstream": null,
       "does": "图片/视频生成工具：generate_image、generate_video，走 Agnes AI 平台",
-      "needs": ["Agnes AI 的 API key"],
-      "manual": ["到 platform.agnes-ai.cn 注册并建 key，填进「设置 → 多模态配置」"]
+      "needs": [
+        "Agnes AI 的 API key"
+      ],
+      "manual": [
+        "到 platform.agnes-ai.cn 注册并建 key，填进「设置 → 多模态配置」"
+      ]
     }
   ],
   "notIncluded": [
-    { "name": "皮肤 / 挂件 / 开机动画 / TTS", "why": "和人格构建无关，各装各的；作者的机器上另外装了 @smalltailqwq/dsh-client-ui-skin-*、dsh-whale-widget、dsh-boot-animation、@memef1f1y/dsh-plugin-tts。" }
+    {
+      "name": "皮肤 / 挂件 / 开机动画 / TTS",
+      "why": "和人格构建无关，各装各的；作者的机器上另外装了 @smalltailqwq/dsh-client-ui-skin-*、dsh-whale-widget、dsh-boot-animation、@memef1f1y/dsh-plugin-tts。"
+    }
   ]
 }
