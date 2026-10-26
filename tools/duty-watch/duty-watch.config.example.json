@@ -1,0 +1,48 @@
+{
+  "_说明": "复制到 $DSH_HOME/duty-watch.json（默认找这个位置）再按需改。带 _ 的字段是给人看的，脚本不读。",
+
+  "notify": {
+    "_说明": "mode=auto 找到 dsh-wechat-send 就推；off 只写日志。cooldownHours：同类问题多久内不重复推。",
+    "mode": "auto",
+    "cooldownHours": 6,
+    "wechatSend": ""
+  },
+
+  "probes": [
+    {
+      "_说明": "authRef 指向 $DSH_HOME/.credentials.yaml 里 refs: 段的键名。带凭据才测得准：这个网关不带 key 回 403，光看状态码分不清「没带钥匙」和「被代理劫走」。",
+      "name": "同济 AGI 网关",
+      "url": "https://agi.tongji.edu.cn/v1/models",
+      "authRef": "TONGJI_AGI_API_KEY",
+      "expect": [200],
+      "timeoutSec": 10
+    }
+  ],
+
+  "sources": [
+    {
+      "name": "刷知乎",
+      "config": "~/.dsh/zhihu-duty/config.json",
+      "enabledField": "autoRun",
+      "maxAgeHours": 3
+    },
+    {
+      "name": "刷微博",
+      "config": "~/.dsh/weibo-duty/config.json",
+      "enabledField": "autoRun",
+      "maxAgeHours": 26
+    },
+    {
+      "name": "刷B站",
+      "config": "~/.dsh/config.json",
+      "enabledField": "autoRun",
+      "maxAgeHours": 26
+    },
+    {
+      "name": "人格蒸馏",
+      "config": "~/.dsh/persona-distill/config.json",
+      "enabledField": null,
+      "maxAgeHours": 30
+    }
+  ]
+}
