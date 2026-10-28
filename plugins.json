@@ -101,8 +101,8 @@
     },
     {
       "name": "dsh-yu-qq",
-      "version": "2.0.2",
-      "source": "github:Speraymer/dsh-yu-qq#fadd3f7adb2a3800879b55746e314cf582add0cd",
+      "version": "2.0.3",
+      "source": "github:Speraymer/dsh-yu-qq#c50edeab8285f4faab8cad2ec661e73fb0f8f10b",
       "layer": "exit",
       "self": true,
       "does": "QQ 双向桥：群聊/私聊分会话、点名响应、离线补课、引用与表情",
