@@ -100,23 +100,6 @@ cd dsh-yu-kit
 
 ---
 
-## 装完别就不管了：看门狗
-
-定时任务失败是**静默**的 —— 网关被代理劫走、额度用完、key 失效、任务卡住，你的感受都只是「今天怎么没刷」。
-
-`tools/duty-watch/` 里有个小脚本专门治这个：探网关（带凭据、绕过系统代理）、查四个任务有没有真在跑、扫上次结果里的失败字样，出问题就推微信（微信窗口关着就排队），并写进 `~/.dsh/duty-watch.log`。
-
-```powershell
-cd tools/duty-watch
-Copy-Item .\duty-watch.config.example.json "$env:USERPROFILE\.dsh\duty-watch.json"
-.\duty-watch.ps1 -DryRun      # 先看它说什么，不推消息
-.\install-task.ps1            # 注册成计划任务，每 6 小时
-```
-
-详见 [tools/duty-watch/README.md](./tools/duty-watch/README.md)。它只**看**任务，不替你跑、不重试。
-
----
-
 ## 许可
 
 本仓库（安装脚本、模板、文档、架构图）：MIT，见 [LICENSE](./LICENSE)。
