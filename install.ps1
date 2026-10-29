@@ -1,21 +1,21 @@
 ﻿<#
 .SYNOPSIS
-  把 dsh-yu-kit 的十个插件装进一个 DSH profile，并写好配置骨架。
+  把 dsh-yu-kit 的十个插件装进一个 DSH profile，并验证安装结果。
 
 .DESCRIPTION
-  只做三件事：装插件、写 profile 配置、放人格骨架。
-  不做的事：不去要你的 key、不登录任何账号、不覆盖你写过的人格。
+  只做两件事：装插件、验证 profile。
+  不做的事：不去要 key、不登录账号、不覆盖 profile 配置和人格。
   那些必须人动手的步骤，脚本最后会打出来（也在 MANUAL-STEPS.md 里）。
 
 .EXAMPLE
   .\install.ps1
-  .\install.ps1 -Profile desktop -Workspace "D:\my-workspace"
+  .\install.ps1 -Profile desktop -DshInstallDir "D:\DeepSeek Harness"
   .\install.ps1 -DryRun
 #>
 [CmdletBinding()]
 param(
   [string]$Profile = "desktop",
-  [string]$Workspace = (Join-Path $env:USERPROFILE "dsh-workspace"),
+  [string]$DshInstallDir = "",
   [switch]$SkipPlugins,
   [switch]$DryRun
 )
@@ -39,10 +39,10 @@ function Resolve-Dsh {
   if ($cmd) { return @{ Kind = "path"; Path = $cmd.Source } }
 
   $candidates = @(
+    $DshInstallDir,
     (Join-Path $env:PROGRAMFILES "DeepSeek Harness"),
     (Join-Path ${env:ProgramFiles(x86)} "DeepSeek Harness"),
     (Join-Path $env:LOCALAPPDATA "Programs\DeepSeek Harness"),
-    "H:\DeepSeekHarness",
     (Join-Path $env:LOCALAPPDATA "DeepSeekHarness")
   ) | Where-Object { $_ -and (Test-Path $_) }
 
@@ -87,22 +87,12 @@ function Invoke-Dsh {
 }
 
 # ---------------------------------------------------------------------------
-# 2. 探测 python（B站转写要用）
-# ---------------------------------------------------------------------------
-$venvPy = Join-Path $dshHome "bili-duty\.venv\Scripts\python.exe"
-$python = if (Test-Path $venvPy) { $venvPy } else {
-  $p = Get-Command python -ErrorAction SilentlyContinue
-  if ($p) { $p.Source } else { "python" }
-}
-
 Say "`nDSH_HOME : $dshHome"
 Say "profile  : $Profile"
-Say "工作区   : $Workspace"
-Say "python   : $python"
 if ($DryRun) { Say "`n(这是 dry-run，不改任何东西)" }
 
 # ---------------------------------------------------------------------------
-# 3. 装插件
+# 2. 装插件
 # ---------------------------------------------------------------------------
 if ($SkipPlugins) {
   Step "跳过插件安装（-SkipPlugins）"
@@ -146,54 +136,49 @@ if ($SkipPlugins) {
   if ($failed.Count -gt 0) {
     Warn ""
     Warn "有 $($failed.Count) 个没装上：$(($failed | ForEach-Object { $_.name }) -join ', ')"
-    Warn "其余照常继续。补装完再重跑一次这个脚本（加 -SkipPlugins 只写配置）。"
+    Warn "为避免半安装状态被误报为成功，脚本到此停止。修复后直接重跑即可。"
+    exit 1
   } else {
-    Ok "10 个插件全部装好"
+    if ($DryRun) { Ok "dry-run 计划检查完成（未实际安装）" }
+    else { Ok "10 个插件全部装好" }
   }
 }
 
 # ---------------------------------------------------------------------------
-# 4. 写 profile 配置
+# 4. 验证 profile；不覆盖用户配置
 # ---------------------------------------------------------------------------
-Step "写 profile 配置"
+Step "验证插件清单"
 $profileDir = Join-Path $dshHome "profiles\$Profile"
-$patchPath = Join-Path $profileDir "cordis.patch.yml"
-$template = Get-Content (Join-Path $root "profile\cordis.patch.template.yml") -Raw -Encoding UTF8
-
-$rendered = $template.
-  Replace("{{WORKSPACE}}",     $Workspace.Replace("\", "\\")).
-  Replace("{{PYTHON}}",        $python.Replace("\", "\\")).
-  Replace("{{OWNER_UID}}",     "0").
-  Replace("{{BILI_MENTION}}",  "")
-
-if ($DryRun) {
-  Say "  [dry-run] 会写: $patchPath"
-} else {
-  New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
-  if (Test-Path $patchPath) {
-    $bak = "$patchPath.bak-" + (Get-Date -Format "yyyyMMdd-HHmmss")
-    Copy-Item $patchPath $bak
-    Warn "原有配置已备份到: $bak"
-    Warn "新写进去的是模板 —— 你之前的个性化设置不会自动合并，需要自己比对补回去。"
+$pkgPath = Join-Path $profileDir "package.json"
+if (-not $DryRun) {
+  if (-not (Test-Path $pkgPath)) { throw "找不到 profile package.json：$pkgPath" }
+  $pkg = Get-Content $pkgPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $deps = @($pkg.dependencies.PSObject.Properties.Name)
+  $bundles = @($pkg.dsh.profile.bundles)
+  $missing = @($kit.plugins | Where-Object { $deps -notcontains $_.name -or $bundles -notcontains $_.name })
+  if ($missing.Count) { throw "安装校验失败，依赖或 bundle 缺少：$(($missing.name) -join ', ')" }
+  $wrongVersion = @()
+  foreach ($p in $kit.plugins) {
+    $installedMeta = Join-Path $profileDir ("node_modules\" + $p.name + "\package.json")
+    if (-not (Test-Path $installedMeta)) { $wrongVersion += "$($p.name)=未安装"; continue }
+    $actual = (Get-Content $installedMeta -Raw -Encoding UTF8 | ConvertFrom-Json).version
+    if ($actual -ne $p.version) { $wrongVersion += "$($p.name)=$actual（需要 $($p.version)）" }
   }
-  [IO.File]::WriteAllText($patchPath, $rendered, (New-Object System.Text.UTF8Encoding($false)))
-  Ok "写入: $patchPath"
+  if ($wrongVersion.Count) { throw "安装版本校验失败：$($wrongVersion -join ', ')" }
+  Ok "10 个插件的 dependencies、bundles 与实际版本均正确"
 }
 
 # ---------------------------------------------------------------------------
-# 5. 人格骨架
+# 5. 人格与配置只给指引，不自动写
 # ---------------------------------------------------------------------------
-Step "人格骨架"
+Step "人格与配置"
 $agents = Join-Path $dshHome "AGENTS.md"
 if (Test-Path $agents) {
   Ok "已有 $agents —— 不动它（这是你的人格，脚本不该覆盖）。"
-  Say "  想换成本套的骨架：先备份，再把 profile\AGENTS.template.md 拷过去。"
-} elseif ($DryRun) {
-  Say "  [dry-run] 会放一份骨架到: $agents"
 } else {
-  Copy-Item (Join-Path $root "profile\AGENTS.template.md") $agents
-  Ok "放了一份骨架到 $agents —— 打开它，把 <尖括号> 换成你自己的话。"
+  Warn "还没有 $agents；请先阅读 profile\AGENTS.template.md，再由用户确认后复制。"
 }
+Say "  profile\cordis.patch.template.yml 只作参考；安装器不会覆盖现有 cordis.patch.yml。"
 
 # ---------------------------------------------------------------------------
 # 6. 还要人动手的地方
@@ -212,7 +197,15 @@ Warn "人格还没写 —— 那是全套东西里唯一不能自动化的部分
 Warn "完整清单（含微信扫码、QQ 客户端、Agnes key）：MANUAL-STEPS.md"
 
 Step "装完这样验"
-Say "  1) dsh --profile $Profile --dump-config    # 能打出配置树就说明插件装上了"
-Say "  2) 启动 DSH 桌面版，左侧应该能看到这些插件的设置页"
-Say "  3) 设置 → 模型，填 key，随便说一句话"
-Say "  4) 只登 B站，跑一轮（插件设置页有『立刻跑一轮』），看它写出来的日报像不像人"
+if (-not $DryRun) {
+  if (Test-Path (Join-Path $profileDir ".plugin-manager")) {
+    Warn "desktop profile 由 Electron 专管，CLI 会拒绝 --dump-config；已完成清单与版本校验，请重启 GUI 验证设置页。"
+  } else {
+    $code = Invoke-Dsh @("--profile", $Profile, "--dump-config")
+    if ($code -ne 0) { throw "配置树验证失败（exit $code）" }
+    Ok "dsh --profile $Profile --dump-config 通过"
+  }
+}
+Say "  1) 启动或重启 DSH 桌面版"
+Say "  2) 设置页确认十个插件入口"
+Say "  3) 按 MANUAL-STEPS.md 完成人工登录与 key 配置"

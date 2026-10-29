@@ -29,8 +29,9 @@ dsh --version    # 桌面版通常没有 dsh 在 PATH，见下
 **如果 `dsh` 不在 PATH 里**（桌面版常见）：CLI 藏在 app.asar 内，用 Electron 当 node 跑：
 
 ```powershell
-$exe = "H:\DeepSeekHarness\DeepSeek Harness.exe"          # 按实际安装位置改
-$cli = "H:\DeepSeekHarness\resources\app.asar\dsh\node_modules\@deepseek-ai\dsh-desktop-host\lib\cli.js"
+$installDir = "<用户确认的 DSH 安装目录>"
+$exe = Join-Path $installDir "DeepSeek Harness.exe"
+$cli = Join-Path $installDir "resources\app.asar\dsh\node_modules\@deepseek-ai\dsh-desktop-host\lib\cli.js"
 $env:ELECTRON_RUN_AS_NODE = "1"
 Start-Process -FilePath $exe -ArgumentList @("--expose-internals", $cli, "--version") -NoNewWindow -Wait -PassThru
 Remove-Item Env:\ELECTRON_RUN_AS_NODE
@@ -50,9 +51,9 @@ Get-Content "$env:USERPROFILE\.dsh\profiles\<profile>\package.json"
 
 判据：
 - `dsh.profile.bundles` 里应该有 `@deepseek-ai/dsh-web-app` —— 没有就说明这不是桌面版 profile，插件会装上但**界面里不会出现**，要换 profile 或先补 bundle。
-- 没有 `cordis.patch.yml` 也行，第 4 步会写。
+- 没有 `cordis.patch.yml` 也行；安装器不会自动创建或覆盖它。
 
-**先备份**：`Copy-Item cordis.patch.yml cordis.patch.yml.bak-<时间戳>`。用户之前调过的个性化设置不会自动合并，你写模板会覆盖它 —— 覆盖前必须告诉用户，并保留备份。
+安装器不会覆盖 `cordis.patch.yml`。模板仅供新环境人工对照；需要合并时先备份并逐项征得用户确认。
 
 ---
 
@@ -78,9 +79,9 @@ dsh plugin --profile <profile> add <source>     # 逐个跑，source 从 plugins
 
 ---
 
-## 4. 写配置骨架
+## 4. 配置边界
 
-把 `profile/cordis.patch.template.yml` 渲染进 `profiles/<profile>/cordis.patch.yml`，替换这四个占位符：
+不要用模板覆盖现有 profile。模板只说明可选字段；账号、UID、路径和行为开关应在对应插件设置页由用户填写。
 
 | 占位符 | 填什么 | 拿不到时 |
 |---|---|---|
@@ -89,21 +90,13 @@ dsh plugin --profile <profile> add <source>     # 逐个跑，source 从 plugins
 | `{{OWNER_UID}}` | 用户自己的平台 UID（B站/QQ） | **填 0**，在手动清单里提醒。填错比填 0 危险 |
 | `{{BILI_MENTION}}` | 用户自己的 B 站昵称 | 留空 |
 
-YAML 里含反斜杠的 Windows 路径要写成双反斜杠或加引号。
-
-⚠️ 模板里的 `preset-standard` 是**整块覆盖**：必须保留完整 plugins 列表，只改 persona 的 prefix。只写 persona 会把 shell / 文件读写 / 搜索这些工具全抹掉。
+若用户明确要求新建配置，才复制模板到一个新文件并逐项替换；不得自动写入正在使用的 `cordis.patch.yml`。
 
 ---
 
 ## 5. 人格骨架
 
-```powershell
-if (-not (Test-Path "$env:USERPROFILE\.dsh\AGENTS.md")) {
-  Copy-Item profile\AGENTS.template.md "$env:USERPROFILE\.dsh\AGENTS.md"
-}
-```
-
-**已存在就不要覆盖**，只告诉用户「想换成骨架的话先备份」。人格是用户的，不是你的。
+已存在的 `~/.dsh/AGENTS.md` 绝不覆盖。不存在时，把模板内容和目标路径展示给用户，取得明确确认后再复制；人格是用户的，不是 Agent 的。
 
 ---
 
@@ -118,7 +111,7 @@ if (-not (Test-Path "$env:USERPROFILE\.dsh\AGENTS.md")) {
 5. **QQ**：先跑起 OneBot 客户端（NapCat 等），再填群号 / 私聊对象 / 自己的 UID / 群会话表。
 6. **微信**：扫码登录（会过期，要重扫）。
 7. **多模态**：`platform.agnes-ai.cn` 建 key → 设置 → 多模态配置。
-8. **微博**：只读不用登；写操作要开放平台服务，默认关着，别开。
+8. **微博**：公开版固定只读，不登录，也没有可开启的写操作。
 9. **定时与频率**：时间段、每日条数、主动开口频率。建议先全保守，观察几天。
 
 完整版（含症状对照表）在 `MANUAL-STEPS.md`，让用户自己看一遍。
@@ -133,8 +126,8 @@ dsh --profile <profile> --dump-config
 ```
 
 逐条确认：
-- [ ] `--dump-config` 退出码 0
-- [ ] 配置树里能搜到十个插件的节点 id
+- [ ] 非 Electron 专管 profile：`--dump-config` 退出码 0；Electron 专管的 desktop profile 会明确拒绝该命令，应改为核对 package 清单、实际版本并重启 GUI
+- [ ] 非 Electron 专管 profile 的配置树能搜到十个插件节点；Electron 专管 profile 则核对 `package.json`、实际版本与 GUI 设置页
 - [ ] 启动 GUI 后，设置里能看到这十个插件的页面
 - [ ] 用户填完模型 key 后，能正常回一句话
 - [ ] 聊几轮后 `~/.dsh/global-memory/chat.json` 在变大

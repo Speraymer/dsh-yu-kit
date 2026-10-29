@@ -1,6 +1,6 @@
 {
   "kit": "dsh-yu-kit",
-  "kitVersion": "1.0.0",
+  "kitVersion": "1.1.0",
   "description": "把「蓝色大肥鱼」这套 DSH 插件套件一次性装进一个 profile：人格、记忆、三个内容源、两个出口、微信通道、多模态生成。",
   "requires": {
     "dsh": ">=0.2.1-rc.3",
@@ -19,8 +19,8 @@
   "plugins": [
     {
       "name": "dsh-persona-distill",
-      "version": "2.1.0",
-      "source": "github:Speraymer/dsh-persona-distill#d540f91a41399271f69cba2e4c1c2ee76dc72c5e",
+      "version": "2.1.1",
+      "source": "github:Speraymer/dsh-persona-distill#f02a84f69a22eaa999eea1bcbfd7cdbe2c045d9d",
       "layer": "persona",
       "self": true,
       "does": "每周把刷到的原料蒸馏进 ~/.dsh/AGENTS.md 的 AUTO 段；每天做一次反面对照",
@@ -33,8 +33,8 @@
     },
     {
       "name": "dsh-yu-memory",
-      "version": "3.0.0",
-      "source": "github:Speraymer/dsh-yu-memory#adf1054b30d75d61e94a5181564065aa9531a931",
+      "version": "3.0.1",
+      "source": "github:Speraymer/dsh-yu-memory#8481f83b755199bc50a7445c123bf91441c228e1",
       "layer": "memory",
       "self": true,
       "does": "两层被动记忆：长期记忆 store.json + 会淡忘的对话记忆 chat.json；工具 remember_global / forget_global",
@@ -43,8 +43,8 @@
     },
     {
       "name": "dsh-yu-mood",
-      "version": "2.0.1",
-      "source": "github:Speraymer/dsh-yu-mood#863317b42e1dbb72bef4ea9b63cd73ba72470c7f",
+      "version": "2.0.2",
+      "source": "github:Speraymer/dsh-yu-mood#f7d43765a075917ab144ba1f822b89e746e0d498",
       "layer": "persona",
       "self": true,
       "does": "每轮聊完自动判断情绪涨跌，右下角挂件点开看数值/情绪/时间线",
@@ -55,8 +55,8 @@
     },
     {
       "name": "dsh-yu-bili",
-      "version": "2.1.1",
-      "source": "github:Speraymer/dsh-yu-bili#1bbbde938220b9be976e5572301621314a0beb32",
+      "version": "2.1.2",
+      "source": "github:Speraymer/dsh-yu-bili#27930f4395fd33ce3e271d336460359486d4fa8d",
       "layer": "source",
       "self": true,
       "does": "定时刷 B站：挑视频、读字幕、写日报、发评论（可 @ 你）",
@@ -67,14 +67,14 @@
       ],
       "manual": [
         "扫码登录 B站（设置页「刷B站」→ 登录）",
-        "填 pythonPath（venv 里的 python）与 workspace",
+        "在设置页点「装主依赖」并通过「测一下」；pythonPath 由插件自动管理",
         "填 dmUid / trustedCommandUid / mentionName（你自己的 UID 与昵称）"
       ]
     },
     {
       "name": "dsh-yu-zhihu",
-      "version": "2.1.0",
-      "source": "github:Speraymer/dsh-yu-zhihu#bec672a21f95231c5596fb32aced57130f0c4080",
+      "version": "2.1.1",
+      "source": "github:Speraymer/dsh-yu-zhihu#083511fcb8e3113f071d0b1059637622d260f3a4",
       "layer": "source",
       "self": true,
       "does": "定时刷知乎：读推荐流与评论，按人格限量点赞/评论/收藏，可发想法",
@@ -89,20 +89,18 @@
     },
     {
       "name": "dsh-yu-weibo",
-      "version": "2.1.0",
-      "source": "github:Speraymer/dsh-yu-weibo#af53bf1b009a3ebcc706057a5ebb5930ff311d2d",
+      "version": "2.1.1",
+      "source": "github:Speraymer/dsh-yu-weibo#098995c91cffd25d767422e19d1c1c0cb96e9931",
       "layer": "source",
       "self": true,
       "does": "定时只读微博：走 m.weibo.cn 公开接口，访客身份，不登录不写",
       "needs": [],
-      "manual": [
-        "写操作（点赞/评论/发博）需要微博开放平台服务，默认关闭"
-      ]
+      "manual": []
     },
     {
       "name": "dsh-yu-qq",
-      "version": "2.0.3",
-      "source": "github:Speraymer/dsh-yu-qq#c4f2a11f21bfdb995d9d290cd7c3dcb11d195ca7",
+      "version": "2.0.4",
+      "source": "github:Speraymer/dsh-yu-qq#066f44d6768107dde171fceaccc3be84820c84cc",
       "layer": "exit",
       "self": true,
       "does": "QQ 双向桥：群聊/私聊分会话、点名响应、离线补课、引用与表情",
@@ -118,8 +116,8 @@
     },
     {
       "name": "dsh-yu-speak",
-      "version": "2.0.1",
-      "source": "github:Speraymer/dsh-yu-speak#de65fa217d9db118f709b6aca04cc0e9980c02af",
+      "version": "2.0.2",
+      "source": "github:Speraymer/dsh-yu-speak#c1a23fc9ad5091c21577e19c1ce0a792bd42ce06",
       "layer": "exit",
       "self": true,
       "does": "按本地概率与冷却规则决定要不要自己发起一轮对话（主动开口）",
@@ -132,8 +130,8 @@
     },
     {
       "name": "dsh-wechat-plugin",
-      "version": "0.44.0",
-      "source": "dsh-wechat-plugin@0.44.0",
+      "version": "0.47.0",
+      "source": "dsh-wechat-plugin@0.47.0",
       "layer": "exit",
       "self": false,
       "license": "MIT",

@@ -31,7 +31,7 @@
 
 ### 2. 第三方插件（2 个，MIT，**版权归原作者**）
 
-#### `dsh-wechat-plugin` 0.44.0
+#### `dsh-wechat-plugin` 0.47.0
 
 - 许可证：**MIT**
 - 版权：`Copyright (c) 2026 dsh-wechat contributors`
@@ -56,7 +56,7 @@
 
 | 东西 | 许可 | 说明 |
 |---|---|---|
-| **DSH（DeepSeek Harness）本体** | 见其官方仓库 | 本仓库只装插件、只写 profile 配置。DSH 要你自己装 |
+| **DSH（DeepSeek Harness）本体** | 见其官方仓库 | 本仓库只装插件并验证 profile，不覆盖用户配置。DSH 要你自己装 |
 | 插件的 npm 运行时依赖 | 各包自带 | 例如 `dsh-yu-weibo` 依赖 `@weibo-ai/weibo-cli`；由 pnpm 按各包 lockfile 安装，本仓库不分发 |
 | `zhihu` CLI、`NapCat` 之类的第三方客户端 | 各自许可 | 手动安装的外部程序，不属于本套件 |
 | Python venv 里的转写依赖 | 各自许可 | `dsh-yu-bili` 的本地转写会用 pip 装依赖 |

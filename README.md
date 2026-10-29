@@ -47,18 +47,18 @@
 ```powershell
 git clone https://github.com/Speraymer/dsh-yu-kit.git
 cd dsh-yu-kit
-.\install.ps1 -Workspace "D:\my-workspace"
+.\install.ps1
 ```
 
-脚本会：装 10 个插件（钉死版本）→ 备份并写入 profile 配置 → 放一份人格骨架（已存在就不覆盖）→ 打印剩下的手动步骤。
+脚本会：装 10 个钉死版本的插件 → 同时核对 `dependencies` 与 `bundles` → 跑 `--dump-config` → 打印人工登录和配置步骤。它不会覆盖现有 `cordis.patch.yml` 或人格。
 
 参数：
 
 | 参数 | 默认 | 说明 |
 |---|---|---|
 | `-Profile` | `desktop` | 装进哪个 profile |
-| `-Workspace` | `%USERPROFILE%\dsh-workspace` | 给它干活用的工作区目录 |
-| `-SkipPlugins` | 关 | 只写配置，不装插件（已经装过时用） |
+| `-DshInstallDir` | 自动探测 | DSH 桌面版的安装目录；非标准位置时由用户或 Agent 明确传入 |
+| `-SkipPlugins` | 关 | 不重复安装，只验证现有 profile |
 | `-DryRun` | 关 | 只打印要做什么，不动文件 |
 
 ### macOS / Linux
@@ -66,7 +66,7 @@ cd dsh-yu-kit
 ```bash
 git clone https://github.com/Speraymer/dsh-yu-kit.git
 cd dsh-yu-kit
-./install.sh --workspace ~/my-workspace
+./install.sh
 ```
 
 ⚠️ `install.sh` **没有在真机上跑过**（作者只有 Windows）。它做的是同一件事，路径与 python 探测换成了 POSIX 写法。跑挂了就把报错贴 issue。
@@ -86,7 +86,9 @@ cd dsh-yu-kit
 
 ---
 
-## 我装的东西都在哪```
+## 我装的东西都在哪
+
+```
 ~/.dsh/
 ├── AGENTS.md                 人格（手写段 + AUTO 段）
 ├── profiles/<profile>/       插件清单与 cordis.patch.yml
@@ -96,7 +98,7 @@ cd dsh-yu-kit
 └── qq-bridge-config.json      QQ 桥配置
 ```
 
-删掉 `~/.dsh` 就等于把它忘干净了。想留人格、清记忆：只删 `global-memory/`。
+这些目录包含人格、长期记忆、登录态和日志。需要清理时先导出或备份，再使用各插件设置页提供的停用、软删除或重置功能；不要直接删除 `~/.dsh` 或 `global-memory`。
 
 ---
 

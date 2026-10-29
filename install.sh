@@ -2,19 +2,17 @@
 # dsh-yu-kit —— macOS / Linux 安装脚本
 #
 # ⚠️ 这份脚本作者没有在真机上跑过（作者只有 Windows）。逻辑和 install.ps1 一致：
-#    装插件 → 写 profile 配置 → 放人格骨架 → 打印手动步骤。
+#    装插件 → 验证 profile → 打印手动步骤；不覆盖用户配置和人格。
 #    跑挂了请把报错贴到 issue。
 set -euo pipefail
 
 PROFILE="desktop"
-WORKSPACE="${HOME}/dsh-workspace"
 SKIP_PLUGINS=0
 DRY_RUN=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --profile) PROFILE="$2"; shift 2 ;;
-    --workspace) WORKSPACE="$2"; shift 2 ;;
     --skip-plugins) SKIP_PLUGINS=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
     -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
@@ -25,7 +23,6 @@ done
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 PROFILE_DIR="$DSH_HOME/profiles/$PROFILE"
-PATCH="$PROFILE_DIR/cordis.patch.yml"
 
 step() { printf '\n=== %s ===\n' "$1"; }
 ok()   { printf '  + %s\n' "$1"; }
@@ -45,23 +42,12 @@ else
   exit 1
 fi
 
-# --- 2. python（B站转写用）---------------------------------------------------
-if [[ -x "$DSH_HOME/bili-duty/.venv/bin/python" ]]; then
-  PYTHON="$DSH_HOME/bili-duty/.venv/bin/python"
-elif command -v python3 >/dev/null 2>&1; then
-  PYTHON="$(command -v python3)"
-else
-  PYTHON="python3"
-fi
-
 echo
 echo "DSH_HOME : $DSH_HOME"
 echo "profile  : $PROFILE"
-echo "工作区   : $WORKSPACE"
-echo "python   : $PYTHON"
 [[ $DRY_RUN -eq 1 ]] && echo && echo "(这是 dry-run，不改任何东西)"
 
-# --- 3. 装插件 ---------------------------------------------------------------
+# --- 2. 装插件 ---------------------------------------------------------------
 # 清单在 plugins.json 里；这里用 node 读，避免再引一个 yaml 解析器。
 if [[ $SKIP_PLUGINS -eq 1 ]]; then
   step "跳过插件安装（--skip-plugins）"
@@ -77,8 +63,9 @@ else
       echo "  [dry-run] dsh plugin --profile $PROFILE add $source"
     else
       if ! dsh plugin --profile "$PROFILE" add "$source"; then
-        warn "$name 安装失败；其它插件继续。修好后单独重跑："
+        warn "$name 安装失败；为避免把半安装状态误报为成功，脚本停止。修好后直接重跑："
         warn "  dsh plugin --profile $PROFILE add $source"
+        exit 1
       fi
     fi
   done < <(node -e '
@@ -86,44 +73,37 @@ else
     for (const p of k.plugins) console.log(p.name + "\t" + p.source);
   ' "$ROOT/plugins.json")
 fi
+[[ $DRY_RUN -eq 1 ]] && ok "dry-run 计划检查完成（未实际安装）"
 
-# --- 4. 写 profile 配置 -------------------------------------------------------
-step "写 profile 配置"
-if [[ $DRY_RUN -eq 1 ]]; then
-  echo "  [dry-run] 会写: $PATCH"
-else
-  mkdir -p "$PROFILE_DIR"
-  if [[ -f "$PATCH" ]]; then
-    BAK="$PATCH.bak-$(date +%Y%m%d-%H%M%S)"
-    cp "$PATCH" "$BAK"
-    warn "原有配置已备份到: $BAK"
-    warn "新写进去的是模板 —— 之前的个性化设置不会自动合并。"
-  fi
-  # 用 node 做替换，避免 sed 在 macOS/GNU 上的差异，也避开反斜杠转义地狱。
-  node -e '
-    const fs = require("fs");
-    const [tpl, out, ws, py] = process.argv.slice(1);
-    let s = fs.readFileSync(tpl, "utf8");
-    s = s.replaceAll("{{WORKSPACE}}", ws)
-         .replaceAll("{{PYTHON}}", py)
-         .replaceAll("{{OWNER_UID}}", "0")
-         .replaceAll("{{BILI_MENTION}}", "");
-    fs.writeFileSync(out, s, "utf8");
-  ' "$ROOT/profile/cordis.patch.template.yml" "$PATCH" "$WORKSPACE" "$PYTHON"
-  ok "写入: $PATCH"
+# --- 4. 验证 profile ----------------------------------------------------------
+step "验证插件清单"
+if [[ $DRY_RUN -eq 0 ]]; then
+  node - "$ROOT/plugins.json" "$PROFILE_DIR/package.json" <<'NODE'
+const fs = require('fs')
+const kit = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'))
+const pkg = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'))
+const deps = new Set(Object.keys(pkg.dependencies || {}))
+const bundles = new Set(pkg.dsh?.profile?.bundles || [])
+const missing = kit.plugins.filter((p) => !deps.has(p.name) || !bundles.has(p.name)).map((p) => p.name)
+if (missing.length) throw new Error('依赖或 bundle 缺少：' + missing.join(', '))
+for (const plugin of kit.plugins) {
+  const meta = JSON.parse(fs.readFileSync(process.argv[3].replace(/package\.json$/, '') + 'node_modules/' + plugin.name + '/package.json', 'utf8'))
+  if (meta.version !== plugin.version) throw new Error(`${plugin.name}=${meta.version}，需要 ${plugin.version}`)
+}
+NODE
+  if [[ ! -e "$PROFILE_DIR/.plugin-manager" ]]; then dsh --profile "$PROFILE" --dump-config >/dev/null; fi
+  ok "插件清单与配置树验证通过"
 fi
 
-# --- 5. 人格骨架 --------------------------------------------------------------
-step "人格骨架"
+# --- 5. 人格与配置只给指引 ---------------------------------------------------
+step "人格与配置"
 AGENTS="$DSH_HOME/AGENTS.md"
 if [[ -f "$AGENTS" ]]; then
   ok "已有 $AGENTS —— 不动它。"
-elif [[ $DRY_RUN -eq 1 ]]; then
-  echo "  [dry-run] 会放一份骨架到: $AGENTS"
 else
-  cp "$ROOT/profile/AGENTS.template.md" "$AGENTS"
-  ok "放了一份骨架到 $AGENTS —— 打开它，把 <尖括号> 换成你自己的话。"
+  warn "还没有 $AGENTS；先读 profile/AGENTS.template.md，再由用户确认后复制。"
 fi
+warn "profile/cordis.patch.template.yml 只作参考；安装器不会覆盖现有 cordis.patch.yml。"
 
 # --- 6. 手动步骤 --------------------------------------------------------------
 step "还要你自己动手（脚本做不到）"
